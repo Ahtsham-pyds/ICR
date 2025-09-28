@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dast AI Extractor Client</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font import for aesthetics */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body class="p-4 flex items-center justify-center">
+
+    <div class="w-full max-w-2xl bg-white shadow-xl rounded-2xl p-6 md:p-10 border border-gray-100">
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-4 text-center">
+            PDF Analysis Client
+        </h1>
+        <p class="text-center text-gray-500 mb-8">
+            Upload your PDF file to the FastAPI endpoint <code>/extract</code> and view the extracted data.
+        </p>
+
+        <!-- File Upload Form -->
+        <form id="uploadForm" class="space-y-6">
+            <div class="flex flex-col items-start space-y-2">
+                <label for="pdfFile" class="text-lg font-medium text-gray-700">
+                    Select PDF Document
+                </label>
+                <!-- File Input -->
+                <input
+                    type="file"
+                    id="pdfFile"
+                    name="file"
+                    accept="application/pdf"
+                    required
+                    class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 p-2.5 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                >
+            </div>
+
+            <!-- Submit Button -->
+            <button
+                type="submit"
+                id="submitButton"
+                class="w-full px-6 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 transition duration-150 ease-in-out shadow-lg shadow-indigo-200/50 disabled:opacity-50 flex items-center justify-center"
+                aria-live="polite"
+            >
+                <span id="buttonText">Extract Data</span>
+                <svg id="loadingSpinner" class="hidden animate-spin h-5 w-5 text-white ml-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </button>
+        </form>
+
+        <!-- Results Area -->
+        <div class="mt-8 pt-6 border-t border-gray-200">
+            <h2 class="text-xl font-bold text-gray-800 mb-3">
+                Extraction Result
+            </h2>
+            <div id="resultContainer" class="p-4 bg-gray-50 border border-gray-200 rounded-lg min-h-[100px] overflow-auto">
+                <pre id="resultOutput" class="text-sm text-gray-700 whitespace-pre-wrap"></pre>
+                <p id="resultMessage" class="text-gray-400">The extracted JSON/text data will appear here...</p>
+            </div>
+            <div id="errorBox" class="hidden mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
+                <p class="font-bold">Error:</p>
+                <p id="errorMessage"></p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', handleUpload);
+
+        // API Endpoint Configuration:
+        // Set this to the URL where your FastAPI server is running (usually port 8000)
+        const API_URL = 'http://127.0.0.1:8000/extract';
+
+        // Get references to UI elements
+        const form = document.getElementById('uploadForm');
+        const fileInput = document.getElementById('pdfFile');
+        const resultOutput = document.getElementById('resultOutput');
+        const resultMessage = document.getElementById('resultMessage');
+        const submitButton = document.getElementById('submitButton');
+        const buttonText = document.getElementById('buttonText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const errorBox = document.getElementById('errorBox');
+        const errorMessage = document.getElementById('errorMessage');
+
+        /**
+         * Toggles the loading state of the UI elements.
+         * @param {boolean} isLoading - True to show loading, false otherwise.
+         */
+        function setLoading(isLoading) {
+            submitButton.disabled = isLoading;
+            if (isLoading) {
+                buttonText.textContent = 'Processing...';
+                loadingSpinner.classList.remove('hidden');
+                errorBox.classList.add('hidden');
+                resultMessage.textContent = 'Processing PDF, please wait...';
+                resultOutput.textContent = '';
+            } else {
+                buttonText.textContent = 'Extract Data';
+                loadingSpinner.classList.add('hidden');
+            }
+        }
+
+        /**
+         * Handles the form submission, sends the file to the FastAPI endpoint, and displays the result.
+         */
+        async function handleUpload(event) {
+            // Prevent the default form submission behavior
+            event.preventDefault();
+
+            const file = fileInput.files[0];
+
+            if (!file) {
+                // Use the custom error box instead of alert()
+                errorMessage.textContent = 'Please select a PDF file before submitting.';
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            setLoading(true);
+
+            try {
+                // 1. Prepare the data for multipart/form-data
+                const formData = new FormData();
+                formData.append('file', file);
+
+                // 2. Send the request to the fully qualified API_URL
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                // 3. Handle non-200 HTTP responses
+                if (!response.ok) {
+                    const errorDetails = await response.text();
+                    throw new Error(`HTTP Error ${response.status}: ${errorDetails.substring(0, 100)}...`);
+                }
+
+                // 4. Parse the response (assuming your FastAPI returns JSON)
+                const result = await response.json();
+
+                // 5. Display the result
+                resultMessage.textContent = 'Extraction successful!';
+                resultOutput.textContent = JSON.stringify(result, null, 2);
+                errorBox.classList.add('hidden'); // Clear any previous errors
+
+            } catch (error) {
+                // 6. Handle network or parsing errors
+                console.error('Extraction failed:', error);
+                resultMessage.textContent = 'An error occurred during extraction.';
+                resultOutput.textContent = '';
+                errorMessage.textContent = error.message || 'Network request failed. Ensure FastAPI is running on http://127.0.0.1:8000.';
+                errorBox.classList.remove('hidden');
+
+            } finally {
+                setLoading(false);
+            }
+        }
+    </script>
+</body>
+</html>
