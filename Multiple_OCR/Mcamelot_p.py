@@ -16,3 +16,5 @@ def extract_table(path):
     stream_tables = camelot.read_pdf('c:\\Users\\hahtsham\\work\\ICR\\Multiple_OCR\sample_with_tables.pdf', pages='all', flavor='stream', suppress_stdout=False)
     return lattice_tables
 
+
+main()
