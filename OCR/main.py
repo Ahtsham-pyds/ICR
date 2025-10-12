@@ -3,8 +3,11 @@ from fastapi.responses import JSONResponse
 from docling.document_converter import DocumentConverter
 import tempfile, os
 from fastapi.middleware.cors import CORSMiddleware
-from docling import DoclingParser
-from docling.vlm_connectors import VLMConnector, SupportedVLMs
+#from docling.parser import DoclingParser
+#from docling.vlm_connectors import VLMConnector, SupportedVLMs
+
+
+
 
 
 app = FastAPI(title="Docling Text Extractor")
@@ -66,5 +69,4 @@ if __name__ == "__main__":
     # This block is for running the script locally via 'python main.py'
     # In a typical setup, you use the 'uvicorn main:app' command instead.
     print("To run the API, please use the command: uvicorn main:app --reload")
-    # uvicorn.run(app, host="0.0.0.0", port=8000) 
-   
+    uvicorn.run(app, host="0.0.0.0", port=8000) 
