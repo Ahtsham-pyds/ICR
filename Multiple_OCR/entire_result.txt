@@ -1,0 +1,25 @@
+Import done
+--- Table 0 (Page: 1) ---
+|    | 0        | 1           | 2                 | 3                  |
+|---:|:---------|:------------|:------------------|:-------------------|
+|  0 | Employee | Department  | Performance Score | Experience (Years) |
+|  1 | Alice    | Sales       | 89                | 5                  |
+|  2 | Bob      | Marketing   | 92                | 4                  |
+|  3 | Charlie  | HR          | 85                | 6                  |
+|  4 | Diana    | Engineering | 95                | 3                  |
+--- Table 1 (Page: 1) ---
+|    | 0          | 1           | 2          | 3           |
+|---:|:-----------|:------------|:-----------|:------------|
+|  0 | Product    | Category    | Units Sold | Revenue ($) |
+|  1 | Laptop     | Electronics | 320        | 256000      |
+|  2 | Desk Chair | Furniture   | 150        | 45000       |
+|  3 | Shoes      | Apparel     | 220        | 33000       |
+|  4 | Watch      | Accessories | 90         | 27000       |
+--- Table 2 (Page: 1) ---
+|    | 0                | 1      | 2                | 3              |
+|---:|:-----------------|:-------|:-----------------|:---------------|
+|  0 | Customer Segment | Region | Satisfaction (%) | Response Count |
+|  1 | Retail           | North  | 88               | 120            |
+|  2 | Wholesale        | East   | 79               | 90             |
+|  3 | Online           | West   | 92               | 200            |
+|  4 | Corporate        | South  | 85               | 75             |
