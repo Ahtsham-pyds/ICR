@@ -32,10 +32,8 @@ result = converter.convert(pdf_path)
 doc = result.document
 
 for table_ix, table in enumerate(doc.tables):
-    # The export_to_dataframe() method is a specific feature of Docling's TableItem
     table_df: pd.DataFrame = table.export_to_dataframe()
     
-    # Optional: Add metadata for context (e.g., which page the table came from)
     page_number = table.prov[0].page_no if table.prov else 'N/A'
     
     print(f"--- Table {table_ix} (Page: {page_number}) ---")
