@@ -88,7 +88,7 @@ class DoclingTableExtractor:
         for idx, (table_element, table_data) in enumerate(result.document.iterate_items()):
             if table_element.label == "table":
                 # Get table as DataFrame
-                print("---------------\n"*3)
+                print("---------------\n")
                 print(table_data)
                 df = table_data.export_to_dataframe()
                 
