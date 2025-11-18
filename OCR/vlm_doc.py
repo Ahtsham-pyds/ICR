@@ -1,26 +1,30 @@
-#from docling.datamodel import vlm_model_specs
-#from docling.datamodel.base_models import InputFormat
-#from docling.datamodel.pipeline_options import VlmPipelineOptions
+
+source_pdf = r"C:\Users\hahtsham\work\ICR\OCR\Flange MTC (First Case).pdf"
 from docling.document_converter import DocumentConverter, PdfFormatOption
-#from docling.pipeline.vlm_pipeline import VlmPipeline
 from docling.datamodel.pipeline_options import PdfPipelineOptions
-#from docling.backend.docling_parse_v2_backend import DoclingParseV2DocumentBackend
-
-
-print('Import done')
-
+from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
 
 pipeline_options = PdfPipelineOptions()
-#pipeline_options.do_ocr = False
+pipeline_options.do_ocr = True
+pipeline_options.do_table_structure = True
 
 converter = DocumentConverter(
     format_options={
-        "pdf": PdfFormatOption(pipeline_options=pipeline_options)
+        "pdf": PdfFormatOption(
+            pipeline_options=pipeline_options,
+            backend=PyPdfiumDocumentBackend  # Backend goes here, not in DocumentConverter
+        )
     }
 )
 
+#source_pdf = r"C:\Users\hahtsham\work\ICR\OCR\Flange.pdf"
+result = converter.convert(source=source_pdf)
+doc = result.document
 
-source_pdf = r"C:\Users\hahtsham\work\ICR\OCR\Flange.pdf"
-doc = converter.convert(source=source_pdf).document
+print(f"Pages: {len(doc.pages)}, Tables: {len(doc.tables)}")
+
+text = doc.export_to_markdown()
+print("Markdown length:", len(text))
+
 with open("output.md", "w", encoding="utf-8") as f:
-    f.write(doc.export_to_markdown())
+    f.write(text)
