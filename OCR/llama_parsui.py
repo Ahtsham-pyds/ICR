@@ -6,8 +6,7 @@ from llama_index.embeddings.openai import OpenAIEmbedding
 import os
 from dotenv import load_dotenv  
 load_dotenv()
-gpt_key = os.getenv("OPEN_API_KEY")
-print(gpt_key)
+
 # 1. PARSE PDFs with LlamaParse (preserves table structure)
 parser = LlamaParse(
     api_key=os.environ['LLAMA_CLOUD_API_KEY'],
@@ -32,7 +31,7 @@ print(f"Loaded {len(documents)} MTC documents")
 # 2. TABLE-AWARE CHUNKING (Critical for RAG with tables)
 # Use MarkdownElementNodeParser - it understands table boundaries
 node_parser = MarkdownElementNodeParser(
-    llm=OpenAI(model="gpt-4o",api_key=gpt_key),
+    llm=OpenAI(model="gpt-4o",api_key=os.environ['OPEN_API_KEY']),
     num_workers=8
 )
 
@@ -60,7 +59,7 @@ recursive_retriever = RecursiveRetriever(
 # 4. CREATE QUERY ENGINE
 query_engine = RetrieverQueryEngine.from_args(
     recursive_retriever,
-    llm=OpenAI(model="gpt-4o",api_key=gpt_key),
+    llm=OpenAI(model="gpt-4o",api_key=os.environ['OPEN_API_KEY']),
 )
 
 # 5. QUERY YOUR MTC DATABASE
