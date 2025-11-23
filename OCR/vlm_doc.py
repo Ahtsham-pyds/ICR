@@ -4,9 +4,13 @@ from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling.datamodel.pipeline_options import PdfPipelineOptions
 from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
 
-pipeline_options = PdfPipelineOptions()
-pipeline_options.do_ocr = True
-pipeline_options.do_table_structure = True
+pipeline_options.do_ocr = False
+pipeline_options.do_table_structure = False
+pipeline_options.do_formula_enrichment = False
+pipeline_options.do_code_enrichment =  False
+pipeline_options.do_picture_classification = False
+pipeline_options.do_picture_description =  False
+pipeline_options.enable_remote_services =  False
 
 converter = DocumentConverter(
     format_options={
